@@ -18,7 +18,9 @@ def get_ai_chat_response(messages: List[MessageType], model="gpt-4.1-mini-2025-0
 
 def gpt_simplify_text(text: str) -> str:
     messages = [
-        {"role": "system", "content": "You will be given innerText of a webpage. Your task is to simplify the text, making it easier to understand. You should not change the meaning of the text, but rather make it more accessible."},
+        {"role": "system", "content": "You will be given innerText of a webpage. " +
+         "Your task is to simplify the text, making it easier to understand. "+
+         "You should remove unwanted data that is not useful for the summary."},
         {"role": "user", "content": text}
     ]
     
