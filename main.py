@@ -35,16 +35,20 @@ class Content(BaseModel):
 
 @app.post("/simplify")
 def simplify_text(payload: Content):
-    chunk_Size = 8000
-    print(f"Received content of length: {len(payload.content)}")
-    chunks = [payload.content[i:i + chunk_Size] for i in range(0, len(payload.content), chunk_Size)]
-    responses = []
-    with ThreadPoolExecutor() as executor:
-        responses = list(executor.map(gpt_simplify_text, chunks))
+    try:
+        chunk_Size = 8000
+        print(f"Received content of length: {len(payload.content)}")
+        chunks = [payload.content[i:i + chunk_Size] for i in range(0, len(payload.content), chunk_Size)]
+        responses = []
+        with ThreadPoolExecutor() as executor:
+            responses = list(executor.map(gpt_simplify_text, chunks))
 
-    print(f"Processed {len(chunks)} chunks.")
+        print(f"Processed {len(chunks)} chunks.")
 
-    return {"content": "\n".join(responses)}
+        return {"content": "\n".join(responses)}
+    except Exception as e:
+        print(f"Error processing content: {e}")
+        return {"error": str(e)}
 
 if __name__ == "__main__":
     import uvicorn

@@ -1,19 +1,37 @@
 import openai
 from typing import List, Dict, Any
+from openai import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
+
+client = OpenAI()
+
 
 MessageType = Dict[str, str] 
 
 def get_ai_chat_response(messages: List[MessageType], model="gpt-4.1-mini-2025-04-14"):
     try:
-        response = openai.chat.completions.create(
+        stream = client.responses.create(
             model=model,
-            messages=messages,
+            input=messages,
+            stream=True,
         )
-        return response.choices[0].message.content  # Extract response text
+
+        
+        full_response = ""
+        for event in stream:
+            delta = getattr(event, "delta", "") # getattr(object, name[, default])
+            print(delta, end="", flush=True)  # Print live to stdout
+            full_response += delta
+
+        print()  # Final newline after response
+        return full_response
+
     
     except Exception as e:
         print(f"Error: {e}")
-        return None
+        return None 
     
 
 def gpt_simplify_text(text: str) -> str:
