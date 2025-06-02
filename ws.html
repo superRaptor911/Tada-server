@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cChat - WebSocket Example
+    </title>
+</head>
+<body>
+    <h1>WebSocket Chat</h1>
+    <form action="" onsubmit="sendMessage(event)">
+        <input type="text" id="messageText" autocomplete="off"/>
+        <button>Send</button>
+    </form>
+    <div id="question"></div>
+    <br>
+    <div id="messages">
+
+    </div>
+    <script>
+        var ws = new WebSocket("ws://localhost:8000/ws/simplify");
+        ws.onopen = function(event) {
+            console.log("WebSocket connection established.");
+        };
+        ws.onmessage = function(event) {
+            const messages = document.getElementById('messages');
+            let last = messages.lastElementChild;
+            if (!last || last.className !== 'stream') {
+                last = document.createElement('p');
+                last.className = 'stream';
+                messages.appendChild(last);
+            }
+            last.textContent += event.data;  // token-by-token streaming
+        };
+        function sendMessage(event) {
+            var input = document.getElementById("messageText")
+            ws.send(input.value)
+            const question = document.getElementById('question');
+            question.textContent = input.value.length > 200 ? '[Q] ' + input.value.slice(0, 200) + '...' : '[Q] ' + input.value;
+            input.value = ''
+            event.preventDefault()
+        }
+    </script>
+</body>
+</html>
